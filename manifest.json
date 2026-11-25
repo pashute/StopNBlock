@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "StopNBlock",
+  "version": "1.0.0",
+  "description": "Stop and block YouTube ads on request.",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": [
+    "*://*.youtube.com/*",
+    "*://adsettings.google.com/*",
+    "*://adssettings.google.com/*",
+    "*://myadcenter.google.com/*"
+  ],
+  "action": {
+    "default_title": "Stop and block this ad"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "commands": {
+    "trigger-stop-block": {
+      "suggested_key": {
+        "default": "Ctrl+Alt+Period",
+        "mac": "MacCtrl+Alt+Period"
+      },
+      "description": "Stop and block the current ad"
+    }
+  }
+}
