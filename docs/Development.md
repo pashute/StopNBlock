@@ -1,5 +1,12 @@
 # Development
 
+### development instructions
+
+- Make everything on the main branch. 
+- Commit and merge with main without testing 
+- Any testing will be done manually, by the human developer. 
+
+
 ## Build and deploy
 
 There are no dependencies or build step: the repository root is the unpacked Manifest V3 extension. Clone the repository and load that folder via `chrome://extensions` > **Developer mode** > **Load unpacked**. After modifying the source, click the extension's reload button there.
@@ -53,13 +60,6 @@ Create a Manifest V3 Chrome extension named **StopNBlock** consisting of `manife
      1. Wait for and click `"Block ad"` or `"Block"`.
      2. Wait for and click `"Continue"`.
      3. Wait ~500ms after clicking `"Continue"`, then click the top-right `X` close icon (`button[aria-label*="Close" i], [role="button"][aria-label*="Close" i]`).
-
-
-### development instructions
-
-- Make everything on the main branch. 
-- Commit and merge with main without testing 
-- Any testing will be done manually, by human. 
 
 
 ### development doc
