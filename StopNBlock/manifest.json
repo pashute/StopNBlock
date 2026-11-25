@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "StopNBlock",
   "version": "1.0.0",
-  "description": "Stop and block YouTube ads on request.",
+  "description": "Stop and request block of YouTube ads.",
   "permissions": ["activeTab", "scripting"],
   "host_permissions": [
     "*://*.youtube.com/*",
@@ -19,10 +19,10 @@
   "commands": {
     "trigger-stop-block": {
       "suggested_key": {
-        "default": "Ctrl+Alt+Period",
-        "mac": "MacCtrl+Alt+Period"
+        "default": "Ctrl+Shift+Q",
+        "mac": "MacCtrl+Shift+Q"
       },
-      "description": "Stop and block the current ad"
+      "description": "Stop and request block of current ad"
     }
   }
 }
