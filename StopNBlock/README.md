@@ -1,6 +1,6 @@
 # StopNBlock - Stop and block ads upon request
 
-While watching a YouTube ad that you wish to avoid, just click StopNBlock or press `AltGr+.` 
+While watching a YouTube ad that you wish to avoid, just click StopNBlock or press `Ctrl+Shift+Q` to quit the ad. 
 
 It stops the video, opens the Google My Ad Center and runs through the block-request procedure. 
 
@@ -18,7 +18,6 @@ There is no Chrome Web Store release yet on the Chrome and App stores.
 For testing [Download the repository as a ZIP](https://github.com/pashute/StopNBlock/archive/refs/heads/main.zip) and extract it. In Chrome, open `chrome://extensions`, enable **Developer mode**, select **Load unpacked**, and choose the extracted `StopNBlock-main` folder. Pin StopNBlock to the toolbar if desired.
 
 Note: Chrome shortcuts can be changed at `chrome://extensions/shortcuts`.
-
 
 ### Access Permissions
 
