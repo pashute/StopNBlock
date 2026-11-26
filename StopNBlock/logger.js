@@ -5,12 +5,12 @@
   if (globalThis.logger) return;
 
   const APP_NAME = "StopNBlock";
-  const APP_VERSION = "1.0.5"; // manifest.json must carry the same number (Chrome requires it there)
-  // Which severities print (VERSION always prints):
-  //   "ERROR" = VERSION + ERROR
-  //   "WARN"  = VERSION + ERROR + WARN
-  //   "DEBUG" = VERSION + ERROR + WARN + DEBUG
-  const LOG_LEVEL = "WARN";
+  const APP_VERSION = "1.0.6"; // manifest.json must carry the same number (Chrome requires it there)
+  // Which severities print (IMPORTANT always prints):
+  //   "ERROR" = IMPORTANT + ERROR
+  //   "WARN"  = IMPORTANT + ERROR + WARN
+  //   "DEBUG" = IMPORTANT + ERROR + WARN + DEBUG
+  const LOG_LEVEL = "DEBUG";
 
   const RANK = { ERROR: 1, WARN: 2, DEBUG: 3 };
 
@@ -26,20 +26,20 @@
   function callerLocation() {
     const site = ((new Error().stack || "").split("\n")[3]) || "";
     const match = site.match(/at (?:(.+?) \()?(?:.*[\/\\])?([^\/\\:]+)\.js:(\d+):\d+\)?\s*$/);
-    if (!match) return `${APP_NAME}.unknown.0`;
+    if (!match) return `${APP_NAME}.unknown:0`;
     const [, func = "anonymous", file, line] = match;
-    return `${APP_NAME}.${file}.${func}.${line}`;
+    return `${APP_NAME}.${file}.${func}:${line}`;
   }
 
   function shown(severity) {
-    if (severity === "VERSION") return true;
+    if (severity === "IMPORTANT") return true;
     return RANK[severity] <= RANK[LOG_LEVEL];
   }
 
-  // log("VERSION" | "ERROR" | "WARN" | "DEBUG", message, ...details)
+  // log("IMPORTANT" | "ERROR" | "WARN" | "DEBUG", message, ...details)
   function log(severity, message, ...details) {
     if (!shown(severity)) return;
-    const text = `${timestamp()} ${callerLocation()}: ${severity} ${message}`;
+    const text = `${timestamp()}  [${severity}] ${callerLocation()} ${message}`;
     if (severity === "ERROR") console.error(text, ...details);
     else if (severity === "WARN") console.warn(text, ...details);
     else console.log(text, ...details);
@@ -48,7 +48,7 @@
   // For caught errors: the error line with the error details on the next line (console.error),
   // then an end marker (console.log). ERROR is shown at every LOG_LEVEL.
   function logError(message, error) {
-    const text = `${timestamp()} ${callerLocation()}: ERROR ${message}`;
+    const text = `${timestamp()}  [ERROR] ${callerLocation()} ${message}`;
     const details = error?.stack || String(error);
     console.error(`${text}\n${details}`);
     console.log("--- end of error message ---");

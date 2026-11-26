@@ -7,7 +7,7 @@
 
   const triggerSource = globalThis.__stopNBlockSource || "unknown";
   const frameKind = window === window.top ? "top frame" : "sub-frame";
-  log("VERSION", `[step0] ${APP_NAME} v${APP_VERSION} started (trigger: ${triggerSource}, ${frameKind}) at ${location.href}`);
+  // log("DEBUG", `[step0] ${APP_NAME} v${APP_VERSION} started (trigger: ${triggerSource}, ${frameKind}) at ${location.href}`);
 
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   const visible = (element) => element && element.getClientRects().length > 0 &&
@@ -138,7 +138,7 @@
         )].find(visible),
         "the ad information button"
       );
-      // log("VERSION", `[step2] ad text on page: ${JSON.stringify(adText())}`);
+      log("DEBUG", `[step2] ad text on page: ${JSON.stringify(adText())}`);
       // log("DEBUG", "[step2] clicking ad information button", describe(info));
       (info.closest('button, [role="button"]') || info).click();
 
@@ -190,7 +190,7 @@
     try {
       // log("DEBUG", "[step3] looking for the Block button");
       const block = await waitForElement(() => findByText(["Block ad", "Block"]), "Block ad");
-      log("VERSION", `[step3] Block called. Ad details: ${JSON.stringify(pageSummary())}`);
+      log("IMPORTANT", `v${APP_VERSION}  Block called.`);
       // log("DEBUG", "[step3] Block button found, clicking", describe(block));
       block.click();
 

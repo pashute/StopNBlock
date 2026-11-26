@@ -12,7 +12,7 @@ async function setBadge(tabId, text) {
 
 async function trigger(tab, source) {
   if (!tab?.id || !tab.url) return;
-  log("VERSION", `[trigger] ${APP_NAME} v${APP_VERSION} triggered by ${source} on tab ${tab.id}`);
+  // log("DEBUG", `[trigger] ${APP_NAME} v${APP_VERSION} triggered by ${source} on tab ${tab.id}`);
 
   const hostname = new URL(tab.url).hostname.toLowerCase();
   if (hostname !== "youtube.com" && !hostname.endsWith(".youtube.com")) {

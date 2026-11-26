@@ -19,13 +19,13 @@ The automation relies on external interfaces and English labels. A human should 
 ## Debug logging
 
 - `logger.js` holds the shared constants and the `log(severity, message)` function. `content.js`, `background.js` and `popup.js` load it.
-- Severities are `VERSION`, `ERROR`, `WARN` and `DEBUG`. `VERSION` always prints.
-- `LOG_LEVEL` in `logger.js` sets the rest: `"ERROR"` shows ERROR, `"WARN"` shows ERROR and WARN, `"DEBUG"` shows everything. It ships as `"WARN"`.
-- To turn DEBUG lines on, set `LOG_LEVEL = "DEBUG"` in `logger.js`, then reload the extension at `chrome://extensions`.
+- Severities are `IMPORTANT`, `ERROR`, `WARN` and `DEBUG`. `IMPORTANT` always prints.
+- `LOG_LEVEL` in `logger.js` sets the rest: `"ERROR"` shows ERROR, `"WARN"` shows ERROR and WARN, `"DEBUG"` shows everything. Before a release, set it back to `"WARN"`.
+- To turn DEBUG lines on, set `LOG_LEVEL = "DEBUG"` in `logger.js`, then reload the extension at `chrome://extensions`. Only the lines that are not commented out print.
 - Caught errors go through `logError(message, error)`. It prints the ERROR line, the error's stack on the next line, then `--- end of error message ---`.
-- Log lines look like `yyyy.mm.dd hh:mm StopNBlock.file.function.line: SEVERITY [stepN] message`. Steps run from `[step0]` (start) to `[step8]` (ad check).
+- Log lines look like `yyyy.mm.dd hh:mm  [SEVERITY] StopNBlock.file.function:line message`. Steps run from `[stepN]` (start) to `[step8]` (ad check).
 - ERROR lines show at every level.
-- `VERSION` lines (the version at the start of each run, and "Block called" with the ad details) always print.
+- The `IMPORTANT` line "v1.0.x  Block called." prints every time Block is clicked, at every level.
 - Where to look: the YouTube page console (F12, Console tab) for the main flow, and the Ad Center frame by choosing it in the console's frame dropdown. The service worker log is under `chrome://extensions` > **Inspect views: service worker**.
 - The app name and version live in `logger.js` (`APP_VERSION`), which all scripts read. `manifest.json` has its own `version` field, which Chrome requires, so update it to the same number.
 
