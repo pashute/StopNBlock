@@ -210,6 +210,11 @@
         ).catch(() => null);
         if (advertiser) {
           log("IMPORTANT", `Advertiser: ${advertiser}. Location: ${rowValue("Location") ?? "unknown"}.`);
+          await chrome.runtime.sendMessage({ source: "stopnblock", type: "remember", advertiser }).catch(() => null);
+          const answer = await chrome.runtime.sendMessage({ source: "stopnblock", type: "summarize", advertiser })
+            .catch(() => null);
+          if (answer?.summary) log("IMPORTANT", `Summary: ${answer.summary}`);
+          else if (answer?.error) log("WARN", `Summary skipped: ${answer.error}`);
         } else {
           log("WARN", "advertiser details did not appear");
         }
@@ -218,6 +223,10 @@
       }
 
       log("IMPORTANT", `v${APP_VERSION}  Block called.`);
+      const state = await chrome.runtime.sendMessage({ source: "stopnblock", type: "state" }).catch(() => null);
+      log("IMPORTANT", state
+        ? `AI Key: ${state.aiKey ? "Yes" : "No"}, Stored List: ${state.storedList ? "Yes" : "No"}, Storage permission: ${state.permission}`
+        : "Settings: unknown");
       // log("DEBUG", "[step3] Block button found, clicking", describe(block));
       block.click();
 

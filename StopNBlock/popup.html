@@ -19,7 +19,14 @@
     button { width: 100%; padding: 8px; font: inherit; border: 0; border-radius: 4px;
       background: var(--accent); color: #fff; cursor: pointer; }
     button:disabled { opacity: 0.5; cursor: default; }
+    button.secondary { background: transparent; color: var(--fg); border: 1px solid var(--muted); margin-top: 6px; }
+    input[type="password"] { width: 100%; box-sizing: border-box; padding: 6px; margin: 6px 0; font: inherit; }
     .status { margin-top: 10px; min-height: 1.4em; color: var(--muted); font-size: 12px; }
+    .section { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--muted); }
+    .note { color: var(--muted); font-size: 12px; margin-top: 6px; }
+    a { color: var(--accent); }
+    ol { margin: 6px 0 0; padding-left: 20px; font-size: 13px; }
+    label { font-size: 13px; }
   </style>
 </head>
 <body>
@@ -28,6 +35,25 @@
   <button id="start">Stop and block this ad</button>
   <div class="shortcut" id="shortcut"></div>
   <div class="status" id="status"></div>
+
+  <div class="section">
+    <div class="note">
+      Free Gemini key for advertiser summaries:
+      <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a>
+    </div>
+    <button class="secondary" id="setKey">Set Gemini API Key</button>
+    <div id="keyForm" hidden>
+      <input type="password" id="keyInput" placeholder="Paste your key here" autocomplete="off">
+      <button id="saveKey">Save key</button>
+    </div>
+    <div class="note" id="keyStatus"></div>
+  </div>
+
+  <div class="section">
+    <label><input type="checkbox" id="storeToggle"> Store the names of the last 10 blocked advertisers</label>
+    <ol id="list"></ol>
+  </div>
+
   <script src="logger.js"></script>
   <script src="popup.js"></script>
 </body>
