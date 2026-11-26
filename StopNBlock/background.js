@@ -1,7 +1,5 @@
-importScripts("debug.js"); // provides debugLog (see debug.js)
-const { debugLog } = globalThis.StopNBlockLog;
-const APP_NAME = "StopNBlock";
-const APP_VERSION = "1.0.2";
+importScripts("logger.js"); // provides APP_NAME, APP_VERSION, log() and logError() (see logger.js)
+const { APP_NAME, APP_VERSION, log, logError } = globalThis.logger;
 const running = new Map();
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -14,11 +12,11 @@ async function setBadge(tabId, text) {
 
 async function trigger(tab, source) {
   if (!tab?.id || !tab.url) return;
-  debugLog(`[trigger] ${APP_NAME} v${APP_VERSION} triggered by ${source} on tab ${tab.id}`);
+  log("VERSION", `[trigger] ${APP_NAME} v${APP_VERSION} triggered by ${source} on tab ${tab.id}`);
 
   const hostname = new URL(tab.url).hostname.toLowerCase();
   if (hostname !== "youtube.com" && !hostname.endsWith(".youtube.com")) {
-    console.error("StopNBlock: the active tab is not YouTube.");
+    log("ERROR", "the active tab is not YouTube.");
     await setBadge(tab.id, "ERR");
     return;
   }
@@ -41,14 +39,14 @@ async function trigger(tab, source) {
     while (!run.finished && Date.now() < deadline) {
       await chrome.scripting.executeScript({
         target: { tabId: tab.id, allFrames: true },
-        files: ["debug.js", "content.js"]
+        files: ["logger.js", "content.js"]
       });
       if (!run.finished) await delay(500);
     }
     if (!run.finished) throw new Error("Timed out waiting for the ad-blocking flow.");
     if (run.error) throw new Error(run.error);
   } catch (error) {
-    console.error("StopNBlock:", error);
+    logError("the ad-blocking flow failed", error);
     await setBadge(tab.id, "ERR");
   } finally {
     running.delete(tab.id);
@@ -60,7 +58,7 @@ chrome.commands.onCommand.addListener((command) => {
   void (async () => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     await trigger(tab, "keyboard shortcut");
-  })().catch((error) => console.error("StopNBlock:", error));
+  })().catch((error) => logError("the keyboard shortcut failed", error));
 });
 
 chrome.runtime.onMessage.addListener((message, sender) => {
@@ -68,18 +66,16 @@ chrome.runtime.onMessage.addListener((message, sender) => {
     // Sent by the popup's Start button.
     void chrome.tabs.get(message.tabId)
       .then((tab) => trigger(tab, "popup button"))
-      .catch((error) => console.error("StopNBlock:", error));
+      .catch((error) => logError("the popup Start button failed", error));
     return;
   }
   const tabId = sender.tab?.id;
   const run = running.get(tabId);
   if (!run || message?.source !== "stopnblock") return;
-  debugLog(`[message] received ${message.type} from frame ${sender.frameId}` +
-    (message.error ? ` (error: ${message.error})` : ""));
 
   if (message.type === "ad-center-result" && sender.frameId !== 0) {
     chrome.tabs.sendMessage(tabId, message, { frameId: 0 }).catch((error) => {
-      console.error("StopNBlock: could not notify the YouTube page:", error);
+      logError("could not notify the YouTube page", error);
     });
   } else if (message.type === "finished" && sender.frameId === 0) {
     run.error = message.error || null;

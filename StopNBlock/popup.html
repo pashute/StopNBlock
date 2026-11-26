@@ -14,7 +14,7 @@
       font: 14px/1.4 system-ui, sans-serif; }
     h1 { font-size: 16px; margin: 0 0 2px; }
     .version { color: var(--muted); font-size: 12px; margin-bottom: 12px; }
-    .shortcut { color: var(--muted); margin-bottom: 12px; }
+    .shortcut { color: var(--muted); margin-top: 10px; }
     kbd { font-family: inherit; border: 1px solid var(--muted); border-radius: 4px; padding: 1px 5px; }
     button { width: 100%; padding: 8px; font: inherit; border: 0; border-radius: 4px;
       background: var(--accent); color: #fff; cursor: pointer; }
@@ -25,10 +25,10 @@
 <body>
   <h1>StopNBlock</h1>
   <div class="version" id="version">v?</div>
-  <div class="shortcut" id="shortcut">Shortcut: …</div>
   <button id="start">Stop and block this ad</button>
+  <div class="shortcut" id="shortcut"></div>
   <div class="status" id="status"></div>
-  <script src="debug.js"></script>
+  <script src="logger.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>

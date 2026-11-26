@@ -1,7 +1,4 @@
-const { debugLog } = globalThis.StopNBlockLog; // loaded by popup.html before this file
-
-const APP_NAME = "StopNBlock";
-const APP_VERSION = "1.0.2";
+const { APP_NAME, APP_VERSION, log } = globalThis.logger; // loaded by popup.html before this file
 
 const versionEl = document.getElementById("version");
 const shortcutEl = document.getElementById("shortcut");
@@ -13,14 +10,14 @@ function setStatus(text) {
 }
 
 versionEl.textContent = `v${APP_VERSION}`;
-debugLog(`[popup] ${APP_NAME} v${APP_VERSION} opened`);
+// log("DEBUG", `[popup] ${APP_NAME} v${APP_VERSION} opened`);
 
 async function showShortcut() {
   const commands = await chrome.commands.getAll();
   const shortcut = commands.find((command) => command.name === "trigger-stop-block")?.shortcut;
   shortcutEl.innerHTML = shortcut
-    ? `Shortcut: <kbd>${shortcut}</kbd>`
-    : `Shortcut: not set (set it at chrome://extensions/shortcuts)`;
+    ? `or press <kbd>${shortcut}</kbd> on a disturbing ad.`
+    : `No shortcut set. Set one at chrome://extensions/shortcuts`;
 }
 
 startButton.addEventListener("click", async () => {
@@ -32,7 +29,7 @@ startButton.addEventListener("click", async () => {
       setStatus("No active tab found.");
       return;
     }
-    debugLog(`[popup] start pressed on tab ${tab.id}`);
+    // log("DEBUG", `[popup] start pressed on tab ${tab.id}`);
     await chrome.runtime.sendMessage({ source: "stopnblock", type: "start", tabId: tab.id });
     setStatus("Started. Check the YouTube tab's console (F12) for progress.");
   } catch (error) {
