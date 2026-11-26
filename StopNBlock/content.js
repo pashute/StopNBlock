@@ -70,6 +70,14 @@
     return (document.body?.innerText || "").replace(/\s+/g, " ").trim().slice(0, 300);
   }
 
+  // Value next to a row label such as "Advertiser" or "Location" in the About this advertiser panel.
+  function rowValue(label) {
+    const labelElement = [...document.querySelectorAll("div")].find((element) =>
+      element.childElementCount === 0 && element.textContent.trim() === label
+    );
+    return labelElement?.nextElementSibling?.textContent.trim() || null;
+  }
+
   function dumpIframes(step) {
     const frames = [...document.querySelectorAll("iframe")].map((frame) => ({
       src: frame.src, visible: visible(frame)
@@ -190,6 +198,25 @@
     try {
       // log("DEBUG", "[step3] looking for the Block button");
       const block = await waitForElement(() => findByText(["Block ad", "Block"]), "Block ad");
+
+      // Open "About this advertiser" to read who paid for the ad. Optional: skipped if it doesn't appear.
+      const aboutButton = await waitForElement(
+        () => findByText(["About this advertiser"]), "About this advertiser", 3000
+      ).catch(() => null);
+      if (aboutButton) {
+        aboutButton.click();
+        const advertiser = await waitForElement(
+          () => rowValue("Advertiser"), "the advertiser name", 3000
+        ).catch(() => null);
+        if (advertiser) {
+          log("IMPORTANT", `Advertiser: ${advertiser}. Location: ${rowValue("Location") ?? "unknown"}.`);
+        } else {
+          log("WARN", "advertiser details did not appear");
+        }
+      } else {
+        log("WARN", "About this advertiser button not found");
+      }
+
       log("IMPORTANT", `v${APP_VERSION}  Block called.`);
       // log("DEBUG", "[step3] Block button found, clicking", describe(block));
       block.click();

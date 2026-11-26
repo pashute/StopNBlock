@@ -5,7 +5,7 @@
   if (globalThis.logger) return;
 
   const APP_NAME = "StopNBlock";
-  const APP_VERSION = "1.0.6"; // manifest.json must carry the same number (Chrome requires it there)
+  const APP_VERSION = "1.0.7"; // manifest.json must carry the same number (Chrome requires it there)
   // Which severities print (IMPORTANT always prints):
   //   "ERROR" = IMPORTANT + ERROR
   //   "WARN"  = IMPORTANT + ERROR + WARN
