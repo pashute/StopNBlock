@@ -11,7 +11,7 @@
 
 There are no dependencies or build step: the repository root is the unpacked Manifest V3 extension. Clone the repository and load that folder via `chrome://extensions` > **Developer mode** > **Load unpacked**. After modifying the source, click the extension's reload button there.
 
-To distribute the unpacked source, publish a GitHub release containing a ZIP with `manifest.json`, `background.js`, `content.js`, and `LICENSE` at the archive root. The README's main-branch ZIP is also available directly from GitHub.
+To distribute the unpacked source, publish a GitHub release containing a ZIP with `manifest.json`, `background.js`, `content.js`, `debug.js`, and `LICENSE` at the archive root. The README's main-branch ZIP is also available directly from GitHub.
 
 To publish to the Chrome Web Store, create a developer account, package the extension files in a ZIP with `manifest.json` at its root, and upload it in the Chrome Web Store Developer Dashboard. Complete the listing, permission justifications, privacy disclosures, and any required review before publishing. Update the README with the actual store URL only after publication.
 

@@ -1,3 +1,7 @@
+importScripts("debug.js"); // provides debugLog (see debug.js)
+const { debugLog } = globalThis.StopNBlockLog;
+const APP_NAME = "StopNBlock";
+const APP_VERSION = "1.0.2";
 const running = new Map();
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -8,8 +12,9 @@ async function setBadge(tabId, text) {
   }
 }
 
-async function trigger(tab) {
+async function trigger(tab, source) {
   if (!tab?.id || !tab.url) return;
+  debugLog(`[trigger] ${APP_NAME} v${APP_VERSION} triggered by ${source} on tab ${tab.id}`);
 
   const hostname = new URL(tab.url).hostname.toLowerCase();
   if (hostname !== "youtube.com" && !hostname.endsWith(".youtube.com")) {
@@ -25,14 +30,18 @@ async function trigger(tab) {
     await setBadge(tab.id, "");
     await chrome.scripting.executeScript({
       target: { tabId: tab.id, allFrames: true },
-      func: () => { globalThis.__stopNBlockStarted = false; }
+      func: (source) => {
+        globalThis.__stopNBlockStarted = false;
+        globalThis.__stopNBlockSource = source;
+      },
+      args: [source]
     });
 
     const deadline = Date.now() + 100000;
     while (!run.finished && Date.now() < deadline) {
       await chrome.scripting.executeScript({
         target: { tabId: tab.id, allFrames: true },
-        files: ["content.js"]
+        files: ["debug.js", "content.js"]
       });
       if (!run.finished) await delay(500);
     }
@@ -47,14 +56,14 @@ async function trigger(tab) {
 }
 
 chrome.action.onClicked.addListener((tab) => {
-  void trigger(tab).catch((error) => console.error("StopNBlock:", error));
+  void trigger(tab, "toolbar click").catch((error) => console.error("StopNBlock:", error));
 });
 
 chrome.commands.onCommand.addListener((command) => {
   if (command !== "trigger-stop-block") return;
   void (async () => {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    await trigger(tab);
+    await trigger(tab, "keyboard shortcut");
   })().catch((error) => console.error("StopNBlock:", error));
 });
 
@@ -62,6 +71,8 @@ chrome.runtime.onMessage.addListener((message, sender) => {
   const tabId = sender.tab?.id;
   const run = running.get(tabId);
   if (!run || message?.source !== "stopnblock") return;
+  debugLog(`[message] received ${message.type} from frame ${sender.frameId}` +
+    (message.error ? ` (error: ${message.error})` : ""));
 
   if (message.type === "ad-center-result" && sender.frameId !== 0) {
     chrome.tabs.sendMessage(tabId, message, { frameId: 0 }).catch((error) => {
