@@ -55,10 +55,6 @@ async function trigger(tab, source) {
   }
 }
 
-chrome.action.onClicked.addListener((tab) => {
-  void trigger(tab, "toolbar click").catch((error) => console.error("StopNBlock:", error));
-});
-
 chrome.commands.onCommand.addListener((command) => {
   if (command !== "trigger-stop-block") return;
   void (async () => {
@@ -68,6 +64,13 @@ chrome.commands.onCommand.addListener((command) => {
 });
 
 chrome.runtime.onMessage.addListener((message, sender) => {
+  if (message?.source === "stopnblock" && message.type === "start") {
+    // Sent by the popup's Start button.
+    void chrome.tabs.get(message.tabId)
+      .then((tab) => trigger(tab, "popup button"))
+      .catch((error) => console.error("StopNBlock:", error));
+    return;
+  }
   const tabId = sender.tab?.id;
   const run = running.get(tabId);
   if (!run || message?.source !== "stopnblock") return;

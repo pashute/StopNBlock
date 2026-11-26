@@ -1,11 +1,10 @@
 # Development
 
-### development instructions
+## development instructions
 
-- Make everything on the main branch. 
-- Commit and merge with main without testing 
-- Any testing will be done manually, by the human developer. 
-
+- Make everything on the main branch.
+- Commit and merge with main without testing.
+- Any testing will be done manually, by the human developer.
 
 ## Build and deploy
 
@@ -17,33 +16,33 @@ To publish to the Chrome Web Store, create a developer account, package the exte
 
 The automation relies on external interfaces and English labels. A human should check the toolbar and keyboard flows with a real eligible ad after interface or permission changes. Inspect the extension service worker and the relevant frame's developer console for errors.
 
-
 ## Original request
 
 ### Intention
+
 Make a chrome add-on called stopnblock that with both options of a hot key or a single mouse click stops the youtube (ad) playing, clicks on the ad center, chooses block and presses continue then closes the ad center and presses continue.
 
 ### StopNBlock repo
+
 Create a new StopNBlock repo for me (user Pashute)
 with a readme that says:
  StopNBlock - Stop and block ads upon request
- 
-While watching a YouTube ad you don't wish to watch, 
-just click StopNBlock or press AltGr+. It finds the ad center, clicks block, continue and closes the ad center once done. 
+
+While watching a YouTube ad you don't wish to watch,
+just click StopNBlock or press Ctrl+Shift+Q. It finds the ad center, clicks block, continue and closes the ad center once done.
 
 This software is provided as open source with UnLicense: A public-domain-like software license dedicating code to the public domain with zero restrictions, no warranty, and full freedom to copy, modify, and distribute.
 
-For any questions you may contact the developer pashute@gmail.com 
-
+For any questions you may contact the developer [pashute@gmail.com](mailto:pashute@gmail.com)
 
 ### Add-on Creation Instructions
 
-Create a Manifest V3 Chrome extension named **StopNBlock** consisting of `manifest.json`, `background.js`, and `content.js` that automates blocking a YouTube ad via toolbar icon click or keyboard shortcut (`Ctrl+Alt+Period` / `MacCtrl+Alt+Period`, triggered by `AltGr+.` on Windows):
+Create a Manifest V3 Chrome extension named **StopNBlock** consisting of `manifest.json`, `background.js`, and `content.js` that automates blocking a YouTube ad via toolbar icon click or keyboard shortcut (originally `Ctrl+Alt+Period` / `MacCtrl+Alt+Period`, triggered by `AltGr+.` on Windows; this did not work because Windows treats Ctrl+Alt as AltGr, so the shortcut was changed to `Ctrl+Shift+Q` / `MacCtrl+Shift+Q`):
 
 1. **Manifest (`manifest.json`)**:
    - Permissions: `activeTab`, `scripting`.
    - Host permissions: `*://*.youtube.com/*`, `*://adsettings.google.com/*`, `*://myadcenter.google.com/*`.
-   - Configure `action` (no popup, click-triggered) and `commands` (`trigger-stop-block` with default `Ctrl+Alt+Period` and mac `MacCtrl+Alt+Period`).
+   - Configure `action` (originally no popup, click-triggered; changed to a popup with a Start button and the version, see `popup.html`) and `commands` (`trigger-stop-block` with default `Ctrl+Shift+Q` and mac `MacCtrl+Shift+Q`; originally `Ctrl+Alt+Period`, which did not work because Windows treats Ctrl+Alt as AltGr).
    - Register `background.js` as the service worker.
 
 2. **Background Service Worker (`background.js`)**:
@@ -61,13 +60,10 @@ Create a Manifest V3 Chrome extension named **StopNBlock** consisting of `manife
      2. Wait for and click `"Continue"`.
      3. Wait ~500ms after clicking `"Continue"`, then click the top-right `X` close icon (`button[aria-label*="Close" i], [role="button"][aria-label*="Close" i]`).
 
-
 ### development doc
 
-add a development.md document in the root, with everything in this prompt including this line. 
+add a development.md document in the root, with everything in this prompt including this line.
 
-Then add in that document a section with instructions for the developer how to build and deploy
+Then add in that document a section with instructions for the developer how to build and deploy.
 
-Update the readme with user instructions where to download and how to install the add-on 
-
-
+Update the readme with user instructions where to download and how to install the add-on.
