@@ -199,31 +199,43 @@
       // log("DEBUG", "[step3] looking for the Block button");
       const block = await waitForElement(() => findByText(["Block ad", "Block"]), "Block ad");
 
+      const state = await chrome.runtime.sendMessage({ source: "stopnblock", type: "state" }).catch(() => null);
+      // The advertiser-details warnings only matter when the AI or the stored list is on.
+      const watching = Boolean(state && (state.aiKey || state.storedList));
+
       // Open "About this advertiser" to read who paid for the ad. Optional: skipped if it doesn't appear.
+      let advertiser = null;
       const aboutButton = await waitForElement(
         () => findByText(["About this advertiser"]), "About this advertiser", 3000
       ).catch(() => null);
-      if (aboutButton) {
+      if (!aboutButton) {
+        if (watching) log("WARN", "Step: Advertiser details. Msg: Advertiser details expander button not found.");
+      } else {
         aboutButton.click();
-        const advertiser = await waitForElement(
+        advertiser = await waitForElement(
           () => rowValue("Advertiser"), "the advertiser name", 3000
         ).catch(() => null);
-        if (advertiser) {
-          log("IMPORTANT", `Advertiser: ${advertiser}. Location: ${rowValue("Location") ?? "unknown"}.`);
-          await chrome.runtime.sendMessage({ source: "stopnblock", type: "remember", advertiser }).catch(() => null);
-          const answer = await chrome.runtime.sendMessage({ source: "stopnblock", type: "summarize", advertiser })
-            .catch(() => null);
-          if (answer?.summary) log("IMPORTANT", `Summary: ${answer.summary}`);
-          else if (answer?.error) log("WARN", `Summary skipped: ${answer.error}`);
-        } else {
-          log("WARN", "advertiser details did not appear");
+        if (!advertiser && watching) {
+          log("WARN", "Step: Advertiser details. Msg: Expanded advertiser details not found.");
         }
-      } else {
-        log("WARN", "About this advertiser button not found");
+      }
+
+      if (advertiser) {
+        log("IMPORTANT", `Advertiser: ${advertiser}. Location: ${rowValue("Location") ?? "unknown"}.`);
+        await chrome.runtime.sendMessage({ source: "stopnblock", type: "remember", advertiser }).catch(() => null);
+        const answer = await chrome.runtime.sendMessage({ source: "stopnblock", type: "summarize", advertiser })
+          .catch(() => null);
+        if (answer?.summary) {
+          log("IMPORTANT", `Summary: ${answer.summary}`);
+        } else if (answer?.error) {
+          log("WARN", "Step: Advertiser ai summary. Msg: AI summary missing. AI timed out.", answer.error);
+          log("IMPORTANT", "Summary: (problem retrieving)");
+        }
+      } else if (watching) {
+        log("IMPORTANT", "Summary: (problem retrieving)");
       }
 
       log("IMPORTANT", `v${APP_VERSION}  Block called.`);
-      const state = await chrome.runtime.sendMessage({ source: "stopnblock", type: "state" }).catch(() => null);
       log("IMPORTANT", state
         ? `AI Key: ${state.aiKey ? "Yes" : "No"}, Stored List: ${state.storedList ? "Yes" : "No"}, Storage permission: ${state.permission}`
         : "Settings: unknown");

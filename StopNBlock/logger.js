@@ -10,7 +10,7 @@
   //   "ERROR" = IMPORTANT + ERROR
   //   "WARN"  = IMPORTANT + ERROR + WARN
   //   "DEBUG" = IMPORTANT + ERROR + WARN + DEBUG
-  const LOG_LEVEL = "DEBUG";
+  const LOG_LEVEL = "WARN";
 
   const RANK = { ERROR: 1, WARN: 2, DEBUG: 3 };
 
@@ -40,8 +40,7 @@
   function log(severity, message, ...details) {
     if (!shown(severity)) return;
     const text = `${timestamp()}  [${severity}] ${callerLocation()} ${message}`;
-    if (severity === "ERROR") console.error(text, ...details);
-    else if (severity === "WARN") console.warn(text, ...details);
+    if (severity === "ERROR" || severity === "WARN") console.error(text, ...details);
     else console.log(text, ...details);
   }
 
