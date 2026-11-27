@@ -105,13 +105,19 @@ async function summarize(advertiser) {
   }
 }
 
-// Keeps the last 10 advertiser names, newest first, only when the checkbox is on.
-async function remember(advertiser) {
+// Keeps the last 10 blocked advertisers, newest first, only when "Store in list" is on.
+async function remember(details) {
   if (!(await hasStorage())) return;
   const { storeAdvertisers, advertiserList = [] } =
     await chrome.storage.local.get(["storeAdvertisers", "advertiserList"]);
   if (!storeAdvertisers) return;
-  const list = [advertiser, ...advertiserList.filter((name) => name !== advertiser)].slice(0, LIST_SIZE);
+  const entry = {
+    name: details.advertiser,
+    location: details.location ?? null,
+    summary: details.summary ?? null,
+    time: new Date().toISOString()
+  };
+  const list = [entry, ...advertiserList.filter((item) => (item.name ?? item) !== entry.name)].slice(0, LIST_SIZE);
   await chrome.storage.local.set({ advertiserList: list });
 }
 
@@ -139,7 +145,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true; // keep the channel open for the async reply
   }
   if (message?.source === "stopnblock" && message.type === "remember") {
-    void remember(message.advertiser)
+    void remember(message.details)
       .catch((error) => logError("could not save the advertiser name", error))
       .finally(() => sendResponse({ ok: true }));
     return true;

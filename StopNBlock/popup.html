@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>StopNBlock</title>
   <style>
-    :root { --bg: #ffffff; --fg: #1f1f1f; --muted: #5f6368; --accent: #b3261e; }
+    :root { --bg: #ffffff; --fg: #1f1f1f; --muted: #5f6368; --accent: #b3261e; --ok: #1e8e3e; }
     @media (prefers-color-scheme: dark) {
-      :root:not([data-theme="light"]) { --bg: #202124; --fg: #e8eaed; --muted: #9aa0a6; --accent: #f28b82; }
+      :root:not([data-theme="light"]) { --bg: #202124; --fg: #e8eaed; --muted: #9aa0a6; --accent: #f28b82; --ok: #81c995; }
     }
-    :root[data-theme="dark"] { --bg: #202124; --fg: #e8eaed; --muted: #9aa0a6; --accent: #f28b82; }
+    :root[data-theme="dark"] { --bg: #202124; --fg: #e8eaed; --muted: #9aa0a6; --accent: #f28b82; --ok: #81c995; }
     body { margin: 0; width: 280px; padding: 14px 16px; background: var(--bg); color: var(--fg);
       font: 14px/1.4 system-ui, sans-serif; }
     h1 { font-size: 16px; margin: 0 0 2px; }
@@ -25,8 +25,13 @@
     .section { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--muted); }
     .note { color: var(--muted); font-size: 12px; margin-top: 6px; }
     a { color: var(--accent); }
-    ol { margin: 6px 0 0; padding-left: 20px; font-size: 13px; }
+    table { width: 100%; margin-top: 6px; border-collapse: collapse; font-size: 12px; }
+    th, td { text-align: left; padding: 3px 4px; border-bottom: 1px solid var(--muted); vertical-align: top; }
     label { font-size: 13px; }
+    .keyrow { display: flex; align-items: center; gap: 8px; }
+    .keyrow button { flex: 1; margin-top: 0; }
+    .led { width: 12px; height: 12px; border-radius: 50%; background: var(--muted); flex: none; }
+    .led.on { background: var(--ok); box-shadow: 0 0 6px var(--ok); }
   </style>
 </head>
 <body>
@@ -37,11 +42,13 @@
   <div class="status" id="status"></div>
 
   <div class="section">
-    <div class="note">
-      Free Gemini key for advertiser summaries:
-      <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a>
+    <div class="keyrow">
+      <span class="led" id="led" title="AI key status"></span>
+      <button class="secondary" id="setKey">Set AI Key</button>
     </div>
-    <button class="secondary" id="setKey">Set Gemini API Key</button>
+    <div class="note">
+      Free key: <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com/apikey</a>
+    </div>
     <div id="keyForm" hidden>
       <input type="password" id="keyInput" placeholder="Paste your key here" autocomplete="off">
       <button id="saveKey">Save key</button>
@@ -50,8 +57,10 @@
   </div>
 
   <div class="section">
-    <label><input type="checkbox" id="storeToggle"> Store the names of the last 10 blocked advertisers</label>
-    <ol id="list"></ol>
+    <label><input type="checkbox" id="storeToggle"> Store in list</label>
+    <button class="secondary" id="listButton">Blocked advertisements list</button>
+    <div class="note">Privacy: List is on local storage, not shared with anyone.</div>
+    <table id="list" hidden></table>
   </div>
 
   <script src="logger.js"></script>

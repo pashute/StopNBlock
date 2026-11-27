@@ -220,13 +220,16 @@
         }
       }
 
+      let location = null;
+      let summary = null;
       if (advertiser) {
-        log("IMPORTANT", `Advertiser: ${advertiser}. Location: ${rowValue("Location") ?? "unknown"}.`);
-        await chrome.runtime.sendMessage({ source: "stopnblock", type: "remember", advertiser }).catch(() => null);
+        location = rowValue("Location");
+        log("IMPORTANT", `Advertiser: ${advertiser}. Location: ${location ?? "unknown"}.`);
         const answer = await chrome.runtime.sendMessage({ source: "stopnblock", type: "summarize", advertiser })
           .catch(() => null);
-        if (answer?.summary) {
-          log("IMPORTANT", `Summary: ${answer.summary}`);
+        summary = answer?.summary ?? null;
+        if (summary) {
+          log("IMPORTANT", `Summary: ${summary}`);
         } else if (answer?.error) {
           log("WARN", "Step: Advertiser ai summary. Msg: AI summary missing. AI timed out.", answer.error);
           log("IMPORTANT", "Summary: (problem retrieving)");
@@ -241,6 +244,11 @@
         : "Settings: unknown");
       // log("DEBUG", "[step3] Block button found, clicking", describe(block));
       block.click();
+      if (advertiser && state?.storedList) {
+        await chrome.runtime.sendMessage({
+          source: "stopnblock", type: "remember", details: { advertiser, location, summary }
+        }).catch(() => null);
+      }
 
       step = "step4";
       // log("DEBUG", "[step4] waiting for the 'Stop seeing this ad?' Continue button");
